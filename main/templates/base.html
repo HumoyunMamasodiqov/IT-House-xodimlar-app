@@ -93,14 +93,15 @@
 
     <!-- Bottom Navigation -->
     <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 z-50">
-        <div class="grid grid-cols-4 h-16">
-            <a href="{% url 'dashboard' %}" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'dashboard' %}bg-primary text-white{% else %}text-gray-600 hover:text-primary{% endif %}">
+        <div class="grid grid-cols-4 h-16 ">
+            <a href="{% url 'dashboard' %}" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'dashboard' %} text-primary{% else %}text-gray-600 hover:text-primary{% endif %}">
                 <div class="w-6 h-6 flex items-center justify-center">
                     <i class="ri-home-4-line text-lg"></i>
                 </div>
                 <span class="text-xs font-medium">Bosh sahifa</span>
             </a>
-            <a href="{% url 'reytinglar' %}" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'reytinglar' %}bg-primary text-white{% else %}text-gray-600 hover:text-primary{% endif %}">
+            
+            <a href="{% url 'reytinglar' %}" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'reytinglar' %} text-primary{% else %}text-gray-600 hover:text-primary{% endif %}">
                 <div class="w-6 h-6 flex items-center justify-center">
                     <i class="ri-bar-chart-line text-lg"></i>
                 </div>
@@ -112,12 +113,14 @@
                 </div>
                 <span class="text-xs">face id </span>
             </a>
-            <a href="{% url 'mening_profilim' %}" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'mening_profilim' %}bg-primary text-white{% else %}text-gray-600 hover:text-primary{% endif %}">
+            <a href="{% url 'mening_profilim' %}" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'mening_profilim' %} text-primary{% else %}text-gray-600 hover:text-primary{% endif %}">
                 <div class="w-6 h-6 flex items-center justify-center">
-                    <i class="ri-user-line text-lg"></i>
+                    <img src="{% static 'img/user.gif' %}" alt="">
                 </div>
                 <span class="text-xs">Profil</span>
             </a>
+            
+           
         </div>
     </nav>
 </body>
