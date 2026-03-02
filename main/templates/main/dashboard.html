@@ -3,6 +3,8 @@
 {% block title %}Bosh sahifa{% endblock %}
 
 {% block content %}
+<!-- DEBUG INFO -->
+
 <!-- Joriy xodim ma'lumotlari (agar oddiy foydalanuvchi bo'lsa) -->
 {% if joriy_xodim %}
 <!-- Xush kelibsiz header -->
@@ -39,9 +41,7 @@
                 0
             {% endif %}
         </div>
-        {% if joriy_xodim and joriy_xodim.bugungi_ball > 0 %}
-        <div class="text-xs text-green-600 mt-1">+{{ joriy_xodim.bugungi_ball }} bugun</div>
-        {% endif %}
+       
     </div>
     
     <!-- Summa -->
@@ -78,9 +78,7 @@
                 0
             {% endif %}
         </div>
-        {% if joriy_xodim and joriy_xodim.bugungi_jarima > 0 %}
-        <div class="text-xs text-red-500 mt-1">-{{ joriy_xodim.bugungi_jarima }} bugun</div>
-        {% endif %}
+      
     </div>
     
     <!-- Jarima Som -->
@@ -113,9 +111,9 @@
 <div class="bg-white rounded-lg shadow-sm mb-6">
     <div class="p-4 border-b border-gray-100 flex items-center justify-between">
         <div>
-            <p class="text-sm text-gray-600 mt-1">Bonus va jarima olgan xodimlar</p>
+            <p class="text-sm text-gray-600">Bonus va jarima olgan xodimlar</p>
         </div>
-        <span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">{{ kunlik_harakatlar_soni|default:"0" }} ta</span>
+        <span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">{{ kunlik_harakatlar_soni }} ta</span>
     </div>
     
     <div class="divide-y divide-gray-100">
@@ -137,7 +135,7 @@
                             <a href="{% url 'xodim_detail' item.xodim.id %}" class="font-medium text-gray-900 hover:text-primary">
                                 {{ item.xodim.ism }} {{ item.xodim.familya }}
                             </a>
-                            <div class="text-sm text-gray-500">{{ item.lavozim|default:"Xodim" }}</div>
+                            <div class="text-xs text-gray-500">{{ item.sana|date:"H:i" }}</div>
                         </div>
                     </div>
                     <div class="text-right">
@@ -153,89 +151,10 @@
             </div>
             {% endfor %}
         {% else %}
-            <!-- Misol ma'lumotlar (bugungi) -->
-            <div class="p-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                            <span class="text-sm font-medium text-green-600">MR</span>
-                        </div>
-                        <div>
-                            <div class="font-medium text-gray-900">Murod Rahimov</div>
-                            <div class="text-sm text-gray-500">Frontend Developer</div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-lg font-semibold text-green-600">+25</div>
-                        <div class="text-xs text-gray-500">50,000 so'm</div>
-                    </div>
-                </div>
-                <div class="mt-2 text-sm text-gray-600 bg-green-50 rounded p-2">
-                    <span class="font-medium">Sabab:</span> Loyihani muddat oldinda yakunlash
-                </div>
-            </div>
-            
-            <div class="p-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                            <span class="text-sm font-medium text-green-600">DN</span>
-                        </div>
-                        <div>
-                            <div class="font-medium text-gray-900">Dilnoza Nazarova</div>
-                            <div class="text-sm text-gray-500">UI/UX Designer</div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-lg font-semibold text-green-600">+30</div>
-                        <div class="text-xs text-gray-500">75,000 so'm</div>
-                    </div>
-                </div>
-                <div class="mt-2 text-sm text-gray-600 bg-green-50 rounded p-2">
-                    <span class="font-medium">Sabab:</span> A'lo sifatli dizayn tayyorlash
-                </div>
-            </div>
-            
-            <div class="p-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                            <span class="text-sm font-medium text-red-600">SA</span>
-                        </div>
-                        <div>
-                            <div class="font-medium text-gray-900">Sardor Abdullayev</div>
-                            <div class="text-sm text-gray-500">Backend Developer</div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-lg font-semibold text-red-600">-15</div>
-                        <div class="text-xs text-gray-500">30,000 so'm</div>
-                    </div>
-                </div>
-                <div class="mt-2 text-sm text-gray-600 bg-red-50 rounded p-2">
-                    <span class="font-medium">Sabab:</span> Kech kelish (10 daqiqa)
-                </div>
-            </div>
-            
-            <div class="p-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                            <span class="text-sm font-medium text-green-600">NI</span>
-                        </div>
-                        <div>
-                            <div class="font-medium text-gray-900">Nilufar Ismoilova</div>
-                            <div class="text-sm text-gray-500">Project Manager</div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-lg font-semibold text-green-600">+40</div>
-                        <div class="text-xs text-gray-500">100,000 so'm</div>
-                    </div>
-                </div>
-                <div class="mt-2 text-sm text-gray-600 bg-green-50 rounded p-2">
-                    <span class="font-medium">Sabab:</span> Mijoz bilan muvaffaqiyatli muzokaralar
-                </div>
+            <div class="p-8 text-center text-gray-500">
+                <i class="ri-inbox-line text-4xl mb-2"></i>
+                <p>Oxirgi 24 soat ichida hech qanday faoliyat yo'q</p>
+                <p class="text-xs mt-2">Bonus yoki jarima qo'shing</p>
             </div>
         {% endif %}
     </div>
@@ -248,7 +167,7 @@
             <h3 class="font-semibold text-gray-900">🏆 Barcha xodimlar</h3>
             <p class="text-sm text-gray-600 mt-1">Umumiy reyting bo'yicha</p>
         </div>
-        <span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">{{ xodimlar_soni|default:"0" }} ta</span>
+        <span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">{{ xodimlar_soni }} ta</span>
     </div>
     
     <div class="divide-y divide-gray-100">
@@ -270,10 +189,6 @@
                             <a href="{% url 'xodim_detail' xodim.id %}" class="font-medium text-gray-900 hover:text-primary">
                                 {{ xodim.ism }} {{ xodim.familya }}
                             </a>
-                            <div class="text-sm text-gray-500">
-                                <span class="text-green-600">+{{ xodim.bonus_ball }}</span> / 
-                                <span class="text-red-600">-{{ xodim.jarima_ball }}</span>
-                            </div>
                         </div>
                     </div>
                     <div class="text-right">
@@ -285,7 +200,12 @@
                 </div>
             </div>
             {% endfor %}
-        {% endif %}
+        {% else %}
+            <div class="p-8 text-center text-gray-500">
+                <i class="ri-team-line text-4xl mb-2"></i>
+                <p>Hozircha xodimlar yo'q</p>
+            </div>
+        {% endif %} 
     </div>
 </div>
 {% endblock %}

@@ -1,89 +1,179 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Bonus Qo'shish{% endblock %}
 
 {% block content %}
-<div class="grid">
-    <div class="card">
-        <h2 class="card-title">➕ {{ title }}</h2>
+<div class="mb-6">
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">➕ Bonus Qo'shish</h2>
+    <p class="text-sm text-gray-600">Xodimlarga bonus ball va pul qo'shish</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Bonus qo'shish formasi -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-5 border-b border-gray-100 bg-gradient-to-r from-[#2001FF] to-[#5A4AFF]">
+            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                <i class="ri-star-fill"></i>
+                Bonus qo'shish
+            </h3>
+        </div>
         
-        <form method="POST">
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <label>Xodim</label>
-                <select name="xodim" class="form-control" required>
-                    <option value="">Xodimni tanlang</option>
-                    {% for xodim in form.fields.xodim.queryset %}
-                    <option value="{{ xodim.id }}">{{ xodim.ism }} {{ xodim.familya }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Sabab</label>
-                <select name="sabab" class="form-control" required>
-                    <option value="">Sababni tanlang</option>
-                    {% for sabab in sabablar %}
-                    <option value="{{ sabab.id }}" data-pul="{{ sabab.pul_miqdori }}" data-ball="{{ sabab.ball_miqdori }}">
-                        {{ sabab.nom }} - {{ sabab.pul_miqdori }} so'm / {{ sabab.ball_miqdori }} ball
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Izoh</label>
-                <textarea name="izoh" class="form-control" rows="3"></textarea>
-            </div>
-            
-            <div id="preview" style="background: #f0f0f0; padding: 15px; border-radius: 10px; margin-bottom: 15px; display: none;">
-                <strong>Tanlangan:</strong><br>
-                <span id="preview-pul"></span> so'm<br>
-                <span id="preview-ball"></span> ball
-            </div>
-            
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Bonus Qo'shish</button>
-        </form>
+        <div class="p-5">
+            <form method="POST" id="bonusForm">
+                {% csrf_token %}
+                
+                <!-- Xodim tanlash -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="ri-user-line text-[#2001FF] mr-1"></i>
+                        Xodim
+                    </label>
+                    <select name="xodim" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2001FF] focus:border-transparent" required>
+                        <option value="" class="text-gray-400">Xodimni tanlang</option>
+                        {% for xodim in form.fields.xodim.queryset %}
+                        <option value="{{ xodim.id }}" class="py-2">
+                            {{ xodim.ism }} {{ xodim.familya }} ({{ xodim.telefon }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Sabab tanlash -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="ri-question-line text-[#2001FF] mr-1"></i>
+                        Bonus sababi
+                    </label>
+                    <select name="sabab" id="sababSelect" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2001FF] focus:border-transparent" required>
+                        <option value="" class="text-gray-400">Sababni tanlang</option>
+                        {% for sabab in sabablar %}
+                        <option value="{{ sabab.id }}" 
+                                data-pul="{{ sabab.pul_miqdori }}" 
+                                data-ball="{{ sabab.ball_miqdori }}"
+                                class="py-2">
+                            {{ sabab.nom }} - {{ sabab.pul_miqdori }} so'm / {{ sabab.ball_miqdori }} ball
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Preview kartochkasi -->
+                <div id="previewCard" class="mb-5 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200 hidden">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="ri-information-line text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Tanlangan bonus:</p>
+                            <div class="flex items-center gap-4 mt-1">
+                                <span class="text-green-600 font-semibold" id="previewBall">0 ball</span>
+                                <span class="text-gray-400">|</span>
+                                <span class="text-green-600 font-semibold" id="previewPul">0 so'm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Izoh -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="ri-file-text-line text-[#2001FF] mr-1"></i>
+                        Izoh
+                    </label>
+                    <textarea name="izoh" rows="4" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2001FF] focus:border-transparent" placeholder="Qo'shimcha izoh..."></textarea>
+                </div>
+                
+                <!-- Tugmalar -->
+                <div class="flex gap-3">
+                    <button type="submit" class="flex-1 px-4 py-3 bg-gradient-to-r from-[#2001FF] to-[#5A4AFF] text-white rounded-xl hover:shadow-lg transition-all font-medium flex items-center justify-center gap-2">
+                        <i class="ri-check-line"></i>
+                        Bonus Qo'shish
+                    </button>
+                    <a href="{% url 'dashboard' %}" class="px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center">
+                        <i class="ri-close-line text-xl"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
     
-    <div class="card">
-        <h3 class="card-title">Mavjud Bonus Sabablari</h3>
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Sabab</th>
-                        <th>Pul (so'm)</th>
-                        <th>Ball</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sabab in sabablar %}
-                    <tr>
-                        <td>{{ sabab.nom }}</td>
-                        <td>{{ sabab.pul_miqdori }}</td>
-                        <td>{{ sabab.ball_miqdori }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- Mavjud bonus sabablari -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-5 border-b border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <i class="ri-list-check text-[#2001FF]"></i>
+                Mavjud bonus sabablari
+            </h3>
+        </div>
+        
+        <div class="p-5">
+            <div class="space-y-3 max-h-96 overflow-y-auto pr-2">
+                {% for sabab in sabablar %}
+                <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:border-green-200 transition-colors">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h4 class="font-medium text-gray-900 mb-2">{{ sabab.nom }}</h4>
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-1">
+                                    <i class="ri-money-dollar-circle-line text-green-600"></i>
+                                    <span class="text-sm text-gray-600">{{ sabab.pul_miqdori }} so'm</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <i class="ri-star-line text-yellow-600"></i>
+                                    <span class="text-sm text-gray-600">{{ sabab.ball_miqdori }} ball</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="ri-star-fill text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-8">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="ri-inbox-line text-3xl text-gray-400"></i>
+                    </div>
+                    <p class="text-gray-500">Hozircha bonus sabablari mavjud emas</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-document.querySelector('select[name="sabab"]').addEventListener('change', function() {
+document.getElementById('sababSelect').addEventListener('change', function() {
     const selected = this.options[this.selectedIndex];
+    const previewCard = document.getElementById('previewCard');
+    
     if (selected.value) {
         const pul = selected.dataset.pul;
         const ball = selected.dataset.ball;
-        document.getElementById('preview').style.display = 'block';
-        document.getElementById('preview-pul').textContent = pul;
-        document.getElementById('preview-ball').textContent = ball;
+        
+        document.getElementById('previewBall').textContent = ball + ' ball';
+        document.getElementById('previewPul').textContent = Number(pul).toLocaleString() + ' so\'m';
+        previewCard.classList.remove('hidden');
     } else {
-        document.getElementById('preview').style.display = 'none';
+        previewCard.classList.add('hidden');
     }
 });
+
+// Form submit animatsiyasi
+document.getElementById('bonusForm').addEventListener('submit', function(e) {
+    const btn = this.querySelector('button[type="submit"]');
+    btn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Yuklanmoqda...';
+    btn.disabled = true;
+});
 </script>
+
+<style>
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+</style>
 {% endblock %}

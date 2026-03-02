@@ -93,23 +93,23 @@
 
     <!-- Bottom Navigation -->
     <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 z-50">
-        <div class="grid grid-cols-4 h-16 ">
+        <div class="flex justify-between h-16 pl-[20px] pr-[20px]">
             <a href="{% url 'dashboard' %}" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'dashboard' %} text-primary{% else %}text-gray-600 hover:text-primary{% endif %}">
                 <div class="w-6 h-6 flex items-center justify-center">
-                    <i class="ri-home-4-line text-lg"></i>
+                 <img src="{% static 'img/home.gif' %}" alt="">
                 </div>
                 <span class="text-xs font-medium">Bosh sahifa</span>
             </a>
             
             <a href="{% url 'reytinglar' %}" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'reytinglar' %} text-primary{% else %}text-gray-600 hover:text-primary{% endif %}">
                 <div class="w-6 h-6 flex items-center justify-center">
-                    <i class="ri-bar-chart-line text-lg"></i>
+              <img src="{% static 'img/reyting.gif' %}" alt="">
                 </div>
                 <span class="text-xs">Reyting</span>
             </a>
             <a href="https://ithousefaceid.pythonanywhere.com/" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'sabablar_boshqaruvi' %}bg-primary text-white{% else %}text-gray-600 hover:text-primary{% endif %}">
                 <div class="w-6 h-6 flex items-center justify-center">
-                    <img src="{% static 'img/faceid.png' %}" alt="">
+                    <img src="{% static 'img/faceid.gif' %}" alt="">
                 </div>
                 <span class="text-xs">face id </span>
             </a>
@@ -119,7 +119,14 @@
                 </div>
                 <span class="text-xs">Profil</span>
             </a>
-            
+            {% if user.is_superuser %}
+            <a href="{% url 'admin_dashboard' %}" class="flex flex-col items-center justify-center space-y-1 text-gray-600 hover:text-primary">
+                <div class="w-6 h-6 flex items-center justify-center">
+                    <i class="ri-settings-3-fill"></i>
+                </div>
+                <span class="text-xs">Admin</span>
+            </a>
+            {% endif %}
            
         </div>
     </nav>

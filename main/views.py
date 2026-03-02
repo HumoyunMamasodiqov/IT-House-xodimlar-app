@@ -9,16 +9,95 @@ from .models import *
 from .forms import *
 
 
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Q, Sum, Count, Avg
+from django.contrib import messages
+from datetime import datetime, timedelta
+from django.utils import timezone
+from .models import *
+from .forms import *
+
 @login_required
 def dashboard(request):
     """Asosiy dashboard - kunlik reyting bilan"""
     
-    # Joriy xodim (agar oddiy foydalanuvchi bo'lsa)
+    # Joriy xodim
     try:
         joriy_xodim = request.user.xodim
+    except:
+        joriy_xodim = None
+    
+    # VAQTINCHA YECHIM: Oxirgi 24 soatdagi harakatlarni olish
+    bir_kun_oldin = timezone.now() - timedelta(days=1)
+    
+    kunlik_bonuslar = BonusRecord.objects.filter(
+        sana__gte=bir_kun_oldin
+    ).select_related('xodim', 'sabab')
+    
+    kunlik_jarimalar = JarimaRecord.objects.filter(
+        sana__gte=bir_kun_oldin
+    ).select_related('xodim', 'sabab')
+    
+    # DEBUG: Terminalga chiqarish
+    print(f"=== DASHBOORD DEBUG ===")
+    print(f"Hozirgi vaqt: {timezone.now()}")
+    print(f"Bir kun oldin: {bir_kun_oldin}")
+    print(f"Jami bonuslar: {BonusRecord.objects.count()}")
+    print(f"Jami jarimalar: {JarimaRecord.objects.count()}")
+    print(f"Oxirgi 24 soatdagi bonuslar: {kunlik_bonuslar.count()}")
+    print(f"Oxirgi 24 soatdagi jarimalar: {kunlik_jarimalar.count()}")
+    
+    # Barcha bonuslarni sana bilan ko'rsatish
+    print("\nBarcha bonuslar:")
+    for b in BonusRecord.objects.all().order_by('-sana')[:10]:
+        print(f"  ID: {b.id}, Xodim: {b.xodim}, Sana: {b.sana}")
+    
+    # Birlashtirish
+    kunlik_harakatlar = []
+    
+    for bonus in kunlik_bonuslar:
+        lavozim = getattr(bonus.xodim, 'lavozim', None) or getattr(bonus.xodim, 'lavozimi', None) or 'Xodim'
+        mahalliy_sana = timezone.localtime(bonus.sana)
         
-        # Bugungi statistika
-        bugun = timezone.now().date()
+        kunlik_harakatlar.append({
+            'tur': 'bonus',
+            'xodim': bonus.xodim,
+            'ball': bonus.ball_miqdori,
+            'pul': bonus.pul_miqdori,
+            'sabab': bonus.sabab.nom if bonus.sabab else 'Bonus',
+            'sana': mahalliy_sana,
+            'lavozim': lavozim,
+        })
+    
+    for jarima in kunlik_jarimalar:
+        lavozim = getattr(jarima.xodim, 'lavozim', None) or getattr(jarima.xodim, 'lavozimi', None) or 'Xodim'
+        mahalliy_sana = timezone.localtime(jarima.sana)
+        
+        kunlik_harakatlar.append({
+            'tur': 'jarima',
+            'xodim': jarima.xodim,
+            'ball': jarima.ball_miqdori,
+            'pul': jarima.pul_miqdori,
+            'sabab': jarima.sabab.nom if jarima.sabab else 'Jarima',
+            'sana': mahalliy_sana,
+            'lavozim': lavozim,
+        })
+    
+    # Vaqt bo'yicha saralash (eng oxirgisi tepada)
+    kunlik_harakatlar.sort(key=lambda x: x['sana'], reverse=True)
+    kunlik_harakatlar_soni = len(kunlik_harakatlar)
+    
+    # Barcha xodimlar (umumiy reyting)
+    xodimlar = Xodim.objects.all().order_by('-reyting_ball')
+    xodimlar_soni = xodimlar.count()
+    
+    # Joriy xodim uchun bugungi statistika
+    bugun = timezone.now().date()
+    if joriy_xodim:
+        # Bugungi bonus va jarimalarni hisoblash (sana bo'yicha)
         bugungi_bonus = BonusRecord.objects.filter(
             xodim=joriy_xodim, 
             sana__date=bugun
@@ -31,54 +110,6 @@ def dashboard(request):
         
         joriy_xodim.bugungi_ball = bugungi_bonus
         joriy_xodim.bugungi_jarima = bugungi_jarima
-        
-    except:
-        joriy_xodim = None
-    
-    # Bugungi sana
-    bugun = timezone.now().date()
-    
-    # Kunlik harakatlar (bugungi bonus va jarimalar)
-    kunlik_bonuslar = BonusRecord.objects.filter(
-        sana__date=bugun
-    ).select_related('xodim', 'sabab').order_by('-sana')
-    
-    kunlik_jarimalar = JarimaRecord.objects.filter(
-        sana__date=bugun
-    ).select_related('xodim', 'sabab').order_by('-sana')
-    
-    # Birlashtirish
-    kunlik_harakatlar = []
-    
-    for bonus in kunlik_bonuslar:
-        kunlik_harakatlar.append({
-            'tur': 'bonus',
-            'xodim': bonus.xodim,
-            'ball': bonus.ball_miqdori,
-            'pul': bonus.pul_miqdori,
-            'sabab': bonus.sabab.nom if bonus.sabab else 'Bonus',
-            'sana': bonus.sana,
-            'lavozim': 'Xodim'
-        })
-    
-    for jarima in kunlik_jarimalar:
-        kunlik_harakatlar.append({
-            'tur': 'jarima',
-            'xodim': jarima.xodim,
-            'ball': jarima.ball_miqdori,
-            'pul': jarima.pul_miqdori,
-            'sabab': jarima.sabab.nom if jarima.sabab else 'Jarima',
-            'sana': jarima.sana,
-            'lavozim': 'Xodim'
-        })
-    
-    # Vaqt bo'yicha saralash (eng oxirgisi tepada)
-    kunlik_harakatlar.sort(key=lambda x: x['sana'], reverse=True)
-    kunlik_harakatlar_soni = len(kunlik_harakatlar)
-    
-    # Barcha xodimlar (umumiy reyting)
-    xodimlar = Xodim.objects.all().order_by('-reyting_ball')
-    xodimlar_soni = xodimlar.count()
     
     context = {
         'joriy_xodim': joriy_xodim,
@@ -373,12 +404,21 @@ def xodimlar(request):
     
     # Sahifalash
     from django.core.paginator import Paginator
-    paginator = Paginator(xodimlar, 10)
+    paginator = Paginator(xodimlar, 10)  # Har sahifada 10 ta xodim
     page = request.GET.get('page', 1)
     xodimlar = paginator.get_page(page)
     
-    return render(request, 'main/xodimlar.html', {'xodimlar': xodimlar})
-
+    # Umumiy statistikani hisoblash
+    umumiy_ball = sum([x.reyting_ball for x in paginator.object_list])
+    umumiy_bonus = sum([x.bonus_ball for x in paginator.object_list])
+    umumiy_jarima = sum([x.jarima_ball for x in paginator.object_list])
+    
+    return render(request, 'main/xodimlar.html', {
+        'xodimlar': xodimlar,
+        'umumiy_ball': umumiy_ball,
+        'umumiy_bonus': umumiy_bonus,
+        'umumiy_jarima': umumiy_jarima,
+    })
 @login_required
 def xodim_detail(request, pk):
     """Bitta xodim haqida to'liq ma'lumot"""
@@ -433,24 +473,36 @@ def jarima_qoshish(request):
         'title': 'Jarima Qo\'shish'
     })
 
+
+
 @staff_member_required
 def sabablar_boshqaruvi(request):
-    bonus_sabablar = BonusSabab.objects.all()
-    jarima_sabablar = JarimaSabab.objects.all()
+    bonus_sabablar = BonusSabab.objects.all().order_by('-ball_miqdori')
+    jarima_sabablar = JarimaSabab.objects.all().order_by('-ball_miqdori')
     
     if request.method == 'POST':
         if 'bonus_qoshish' in request.POST:
             nom = request.POST.get('bonus_nom')
             pul = request.POST.get('bonus_pul')
             ball = request.POST.get('bonus_ball')
-            BonusSabab.objects.create(nom=nom, pul_miqdori=pul, ball_miqdori=ball)
+            BonusSabab.objects.create(
+                nom=nom, 
+                pul_miqdori=pul, 
+                ball_miqdori=ball,
+                active=True
+            )
             messages.success(request, 'Bonus sababi qo\'shildi!')
         
         elif 'jarima_qoshish' in request.POST:
             nom = request.POST.get('jarima_nom')
             pul = request.POST.get('jarima_pul')
             ball = request.POST.get('jarima_ball')
-            JarimaSabab.objects.create(nom=nom, pul_miqdori=pul, ball_miqdori=ball)
+            JarimaSabab.objects.create(
+                nom=nom, 
+                pul_miqdori=pul, 
+                ball_miqdori=ball,
+                active=True
+            )
             messages.success(request, 'Jarima sababi qo\'shildi!')
         
         elif 'ochirish' in request.POST:
@@ -458,13 +510,65 @@ def sabablar_boshqaruvi(request):
             pk = request.POST.get('pk')
             if tur == 'bonus':
                 BonusSabab.objects.filter(id=pk).delete()
+                messages.success(request, 'Bonus sababi o\'chirildi!')
             else:
                 JarimaSabab.objects.filter(id=pk).delete()
-            messages.success(request, 'Sabab o\'chirildi!')
+                messages.success(request, 'Jarima sababi o\'chirildi!')
         
         return redirect('sabablar_boshqaruvi')
     
-    return render(request, 'main/sabablar_boshqaruvi.html', {
+    context = {
         'bonus_sabablar': bonus_sabablar,
-        'jarima_sabablar': jarima_sabablar
-    })
+        'jarima_sabablar': jarima_sabablar,
+    }
+    return render(request, 'main/sabablar_boshqaruvi.html', context)
+
+
+
+
+
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Count, Sum
+
+@staff_member_required
+def admin_dashboard(request):
+    """Admin uchun maxsus dashboard"""
+    
+    # Asosiy statistika
+    jami_xodimlar = Xodim.objects.count()
+    jami_bonuslar = BonusRecord.objects.count()
+    jami_jarimalar = JarimaRecord.objects.count()
+    
+    # Umumiy ball
+    umumiy_ball = Xodim.objects.aggregate(Sum('reyting_ball'))['reyting_ball__sum'] or 0
+    
+    # Bugun qo'shilgan yozuvlar
+    bugun = timezone.now().date()
+    bugun_bonus = BonusRecord.objects.filter(sana__date=bugun).count()
+    bugun_jarima = JarimaRecord.objects.filter(sana__date=bugun).count()
+    bugun_qoshilgan = bugun_bonus + bugun_jarima
+    
+    # Faol sabablar
+    faol_sabablar = BonusSabab.objects.filter(active=True).count() + JarimaSabab.objects.filter(active=True).count()
+    
+    # So'nggi 10 bonus va jarima
+    oxirgi_bonuslar = BonusRecord.objects.select_related('xodim', 'sabab').order_by('-sana')[:10]
+    oxirgi_jarimalar = JarimaRecord.objects.select_related('xodim', 'sabab').order_by('-sana')[:10]
+    
+    # TOP 10 xodimlar
+    top_xodimlar = Xodim.objects.all().order_by('-reyting_ball')[:10]
+    
+    context = {
+        'jami_xodimlar': jami_xodimlar,
+        'jami_bonuslar': jami_bonuslar,
+        'jami_jarimalar': jami_jarimalar,
+        'umumiy_ball': umumiy_ball,
+        'bugun_qoshilgan': bugun_qoshilgan,
+        'faol_sabablar': faol_sabablar,
+        'oxirgi_bonuslar': oxirgi_bonuslar,
+        'oxirgi_jarimalar': oxirgi_jarimalar,
+        'top_xodimlar': top_xodimlar,
+    }
+    return render(request, 'main/admin_dashboard.html', context)
+
