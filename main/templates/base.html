@@ -50,8 +50,14 @@
             <div class="flex items-center space-x-3">
                 {% if user.is_authenticated %}
                 <span class="text-sm font-medium text-gray-700">{{ user.get_full_name|default:user.username }}</span>
-                <a href="{% url 'mening_profilim' %}" class="w-8 h-8 flex items-center justify-center bg-primary rounded-full cursor-pointer">
-                    <i class="ri-user-line text-white text-sm"></i>
+                <a href="{% url 'mening_profilim' %}" class="w-8 h-8 flex items-center justify-center bg-primary rounded-full cursor-pointer overflow-hidden">
+                    {% if user.xodim.rasm and user.xodim.rasm.url %}
+                        <!-- Agar rasm bo'lsa -->
+                        <img src="{{ user.xodim.rasm.url }}" alt="{{ user.xodim.ism }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <!-- Agar rasm bo'lmasa -->
+                        <i class="ri-user-line text-white text-sm"></i>
+                    {% endif %}
                 </a>
                 {% else %}
                 <a href="{% url 'login' %}" class="text-sm font-medium text-primary">Kirish</a>

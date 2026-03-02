@@ -1,142 +1,246 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Drum Podium</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ball O'zgarishi Sabablari - IT House</title>
+    <style>
+        /* Umumiy */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f6f8;
+        }
+        a { text-decoration: none; color: inherit; }
 
-<style>
-body{
-    margin:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    background:#f2f2f2;
-    font-family:Arial;
-    perspective:1200px;
-}
+        /* Header */
+        header {
+            background-color: #1f2937;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        .logo { font-weight: bold; font-size: 20px; }
+        .nav { display: flex; align-items: center; gap: 15px; }
+        .nav button { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
+        .profile { background-color: #374151; padding: 6px 12px; border-radius: 4px; }
 
-.podium{
-    display:flex;
-    align-items:flex-end;
-    gap:40px;
-}
+        /* Sarlavha */
+        .title-section {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .title-section h1 { margin-bottom: 10px; font-size: 28px; }
+        .title-section p { color: #555; }
 
-.block{
-    width:130px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    color:white;
-    font-size:40px;
-    font-weight:bold;
-    border-radius:12px;
-}
+        /* Filtrlar */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filters select, .filters button {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
 
-/* 1 o‘rin */
-.first{
-    height:220px;
-    background:linear-gradient(to top,#2daae1,#4fc3f7);
-}
+        /* Statistika kartlari */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 180px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .stat-card h2 { margin: 0 0 10px 0; font-size: 22px; }
+        .stat-card p { margin: 0; color: #555; }
 
-/* Drum container */
-.drum-container{
-    height:170px;
-    width:130px;
-    position:relative;
-    transform-style:preserve-3d;
-    transition:transform 0.8s ease-in-out;
-}
+        /* Ro'yxat */
+        .list {
+            max-width: 900px;
+            margin: auto;
+            padding: 0 20px 50px 20px;
+        }
+        .list-item {
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        .item-info { display: flex; flex-direction: column; }
+        .item-info span { margin-bottom: 3px; }
+        .points { font-weight: bold; font-size: 18px; }
+        .points.positive { color: green; }
+        .points.negative { color: red; }
+        .details-btn {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
 
-.face{
-    position:absolute;
-    width:130px;
-    height:170px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:40px;
-    font-weight:bold;
-    color:white;
-    border-radius:12px;
-    backface-visibility:hidden;
-}
-
-.second-face{
-    background:linear-gradient(to top,#1f7fbf,#3498db);
-}
-
-.third-face{
-    background:linear-gradient(to top,#165a99,#2980b9);
-}
-
-button{
-    margin-top:40px;
-    padding:10px 30px;
-    font-size:16px;
-    cursor:pointer;
-    border:none;
-    border-radius:6px;
-    background:#2daae1;
-    color:white;
-}
-</style>
+        /* Ma'lumot kartlari (popup) */
+        .popup {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .popup-content {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+        }
+        .popup-content h3 { margin-bottom: 15px; }
+        .close-btn {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px; height: 25px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="podium">
+    <!-- Header -->
+    <header>
+        <div class="logo">IT House</div>
+        <div class="nav">
+            <button onclick="history.back()">Orqaga</button>
+            <div class="profile">Ali Valiyev</div>
+        </div>
+    </header>
 
-    <!-- Left Drum -->
-    <div class="drum-container" id="leftDrum">
-        <div class="face second-face" id="leftFront">2</div>
-        <div class="face second-face" id="leftBack" style="transform:rotateX(180deg)">4</div>
+    <!-- Sarlavha -->
+    <div class="title-section">
+        <h1>Ball O'zgarishi Sabablari</h1>
+        <p>Xodimlarning ball o'zgarishiga sabab bo'lgan omillar haqida ma'lumot.</p>
     </div>
 
-    <!-- Center -->
-    <div class="block first">1</div>
-
-    <!-- Right Drum -->
-    <div class="drum-container" id="rightDrum">
-        <div class="face third-face" id="rightFront">3</div>
-        <div class="face third-face" id="rightBack" style="transform:rotateX(180deg)">5</div>
+    <!-- Filtrlar -->
+    <div class="filters">
+        <select id="timeFilter">
+            <option value="all">Barchasi</option>
+            <option value="weekly">Haftalik</option>
+            <option value="monthly">Oylik</option>
+        </select>
+        <select id="employeeFilter">
+            <option value="all">Barchasi xodimlar</option>
+            <option value="ali">Ali Valiyev</option>
+            <option value="vali">Vali Karimov</option>
+        </select>
+        <button data-type="all">Barchasi</button>
+        <button data-type="positive">Ball qo'shish</button>
+        <button data-type="negative">Ball ayrish</button>
     </div>
 
-</div>
+    <!-- Statistika -->
+    <div class="stats">
+        <div class="stat-card">
+            <h2 id="totalPoints">+45</h2>
+            <p>Jami ball o'zgarishlari</p>
+        </div>
+        <div class="stat-card">
+            <h2>Vazifa</h2>
+            <p>Eng ko'p ball qo'shilgan</p>
+        </div>
+        <div class="stat-card">
+            <h2>Kechikish</h2>
+            <p>Eng ko'p ball ayrilgan</p>
+        </div>
+        <div class="stat-card">
+            <h2>Bonus</h2>
+            <p>Qo'shimcha ball</p>
+        </div>
+    </div>
 
-<button onclick="spin()">Aylantir</button>
+    <!-- Ro'yxat -->
+    <div class="list" id="pointsList">
+        <div class="list-item" data-type="positive">
+            <div class="item-info">
+                <span><strong>Ali Valiyev</strong> - Dasturchi</span>
+                <span>Sabab: Loyiha yakunlash</span>
+                <span>Sana: 02.03.2026 10:00</span>
+            </div>
+            <div class="points positive">+10</div>
+            <button class="details-btn" onclick="showPopup('Loyiha muvaffaqiyatli yakunlandi.')">Tafsilotlar</button>
+        </div>
 
-<script>
-let leftNumber = 2;
-let rightNumber = 3;
-let rotateX = 0;
+        <div class="list-item" data-type="negative">
+            <div class="item-info">
+                <span><strong>Vali Karimov</strong> - Dizayner</span>
+                <span>Sabab: Vazifa kechikishi</span>
+                <span>Sana: 01.03.2026 15:30</span>
+            </div>
+            <div class="points negative">-5</div>
+            <button class="details-btn" onclick="showPopup('Vazifa belgilangan vaqtda bajarilmadi.')">Tafsilotlar</button>
+        </div>
+    </div>
 
-function spin(){
+    <!-- Popup -->
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <button class="close-btn" onclick="closePopup()">x</button>
+            <h3>Sabab tafsiloti</h3>
+            <p id="popupText"></p>
+        </div>
+    </div>
 
-    const leftDrum = document.getElementById("leftDrum");
-    const rightDrum = document.getElementById("rightDrum");
+    <script>
+        // Popup funksiyalari
+        function showPopup(text){
+            document.getElementById('popupText').innerText = text;
+            document.getElementById('popup').style.display = 'flex';
+        }
+        function closePopup(){
+            document.getElementById('popup').style.display = 'none';
+        }
 
-    rotateX += 180;
-
-    leftDrum.style.transform = `rotateX(${rotateX}deg)`;
-    rightDrum.style.transform = `rotateX(${rotateX}deg)`;
-
-    setTimeout(()=>{
-        leftNumber += 2;
-        rightNumber += 2;
-
-        document.getElementById("leftFront").textContent = leftNumber;
-        document.getElementById("leftBack").textContent = leftNumber + 2;
-
-        document.getElementById("rightFront").textContent = rightNumber;
-        document.getElementById("rightBack").textContent = rightNumber + 2;
-
-    },800);
-}
-</script>
+        // Filtr funksiyalari
+        const filterButtons = document.querySelectorAll('.filters button');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.getAttribute('data-type');
+                const items = document.querySelectorAll('.list-item');
+                items.forEach(item => {
+                    if(type === 'all' || item.dataset.type === type){
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 
 </body>
 </html>
-    

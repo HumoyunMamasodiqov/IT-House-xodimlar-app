@@ -4,18 +4,21 @@ from .models import *
 
 class XodimForm(forms.ModelForm):
     username = forms.CharField(max_length=150, label='Login')
-    password = forms.CharField(widget=forms.PasswordInput, label='Parol')
+    password = forms.CharField(widget=forms.PasswordInput, label='Parol', required=False)
     
     class Meta:
         model = Xodim
-        fields = ['ism', 'familya', 'telefon']
+        fields = ['ism', 'familya', 'telefon', 'rasm']  # rasm qo'shildi
     
     def save(self, commit=True):
-        # User yaratish
-        user = User.objects.create_user(
-            username=self.cleaned_data['username'],
-            password=self.cleaned_data['password']
-        )
+        # User yaratish yoki mavjudini olish
+        username = self.cleaned_data['username']
+        password = self.cleaned_data.get('password')
+        
+        user, created = User.objects.get_or_create(username=username)
+        if password:
+            user.set_password(password)
+            user.save()
         
         # Xodim yaratish
         xodim = super().save(commit=False)
@@ -61,3 +64,8 @@ class JarimaRecordForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+class XodimRasmForm(forms.ModelForm):
+    class Meta:
+        model = Xodim
+        fields = ['rasm']

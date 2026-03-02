@@ -6,9 +6,19 @@
 <!-- Joriy xodim ma'lumotlari (agar oddiy foydalanuvchi bo'lsa) -->
 {% if joriy_xodim %}
 <!-- Xush kelibsiz header -->
-<div class="mb-4">
-    <p class="text-gray-500 text-sm">Xush kelibsiz!</p>
-    <h2 class="text-xl font-bold text-gray-900">{{ joriy_xodim.ism }} {{ joriy_xodim.familya }}</h2>
+<div class="mb-4 flex items-center justify-between">
+    <div>
+        <p class="text-gray-500 text-sm">Xush kelibsiz!</p>
+        <h2 class="text-xl font-bold text-gray-900">{{ joriy_xodim.ism }} {{ joriy_xodim.familya }}</h2>
+    </div>
+    <!-- Profilga o'tish tugmasi -->
+    <a href="{% url 'mening_profilim' %}" class="w-10 h-10 bg-primary rounded-full flex items-center justify-center overflow-hidden">
+        {% if joriy_xodim.rasm and joriy_xodim.rasm.url %}
+            <img src="{{ joriy_xodim.rasm.url }}" alt="{{ joriy_xodim.ism }}" class="w-full h-full object-cover">
+        {% else %}
+            <span class="text-white font-bold">{{ joriy_xodim.ism|first }}{{ joriy_xodim.familya|first }}</span>
+        {% endif %}
+    </a>
 </div>
 {% endif %}
 
@@ -95,7 +105,7 @@
 
 <!-- Kunlik reyting header -->
 <div class="flex items-center justify-between mb-3">
-    <h2 class="text-lg font-semibold text-gray-900">📅 Kunlik reyting</h2>
+    <h3 class="font-semibold text-gray-900">📅 Bugungi faoliyat</h3>
     <span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">{{ bugun|date:"d.m.Y" }}</span>
 </div>
 
@@ -103,7 +113,6 @@
 <div class="bg-white rounded-lg shadow-sm mb-6">
     <div class="p-4 border-b border-gray-100 flex items-center justify-between">
         <div>
-            <h3 class="font-semibold text-gray-900">Bugungi faoliyat</h3>
             <p class="text-sm text-gray-600 mt-1">Bonus va jarima olgan xodimlar</p>
         </div>
         <span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">{{ kunlik_harakatlar_soni|default:"0" }} ta</span>
@@ -115,10 +124,14 @@
             <div class="p-4 {% if item.tur == 'jarima' %}hover:bg-red-50{% else %}hover:bg-green-50{% endif %} transition-colors">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 {% if item.tur == 'jarima' %}bg-red-100{% else %}bg-green-100{% endif %} rounded-full flex items-center justify-center">
-                            <span class="text-sm font-medium {% if item.tur == 'jarima' %}text-red-600{% else %}text-green-600{% endif %}">
-                                {{ item.xodim.ism|first }}{{ item.xodim.familya|first }}
-                            </span>
+                        <div class="w-10 h-10 {% if item.tur == 'jarima' %}bg-red-100{% else %}bg-green-100{% endif %} rounded-full flex items-center justify-center overflow-hidden">
+                            {% if item.xodim.rasm and item.xodim.rasm.url %}
+                                <img src="{{ item.xodim.rasm.url }}" alt="{{ item.xodim.ism }}" class="w-full h-full object-cover">
+                            {% else %}
+                                <span class="text-sm font-medium {% if item.tur == 'jarima' %}text-red-600{% else %}text-green-600{% endif %}">
+                                    {{ item.xodim.ism|first }}{{ item.xodim.familya|first }}
+                                </span>
+                            {% endif %}
                         </div>
                         <div>
                             <a href="{% url 'xodim_detail' item.xodim.id %}" class="font-medium text-gray-900 hover:text-primary">
@@ -244,10 +257,14 @@
             <div class="p-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                            <span class="text-sm font-medium text-gray-600">
-                                {{ xodim.ism|first }}{{ xodim.familya|first }}
-                            </span>
+                        <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+                            {% if xodim.rasm and xodim.rasm.url %}
+                                <img src="{{ xodim.rasm.url }}" alt="{{ xodim.ism }}" class="w-full h-full object-cover">
+                            {% else %}
+                                <span class="text-sm font-medium text-gray-600">
+                                    {{ xodim.ism|first }}{{ xodim.familya|first }}
+                                </span>
+                            {% endif %}
                         </div>
                         <div>
                             <a href="{% url 'xodim_detail' xodim.id %}" class="font-medium text-gray-900 hover:text-primary">

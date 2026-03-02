@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from datetime import datetime, timedelta
+from django.utils import timezone
 
 class BonusSabab(models.Model):
     nom = models.CharField(max_length=200)
@@ -37,15 +38,18 @@ class Xodim(models.Model):
     familya = models.CharField(max_length=100)
     telefon = models.CharField(max_length=20)
     
+    # YANGI: Rasm maydoni
+    rasm = models.ImageField(upload_to='xodim_rasmlari/', null=True, blank=True)
+    
     # Bonus (ALOHIDA)
-    bonus_ball = models.IntegerField(default=0)  # o'zgartirilmadi
-    bonus_pul = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # o'zgartirilmadi
+    bonus_ball = models.IntegerField(default=0)
+    bonus_pul = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     
     # Jarima (ALOHIDA)
-    jarima_ball = models.IntegerField(default=0)  # o'zgartirilmadi
-    jarima_pul = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # o'zgartirilmadi
+    jarima_ball = models.IntegerField(default=0)
+    jarima_pul = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     
-    # Reyting uchun (farq) - yangi maydonlar
+    # Reyting uchun (farq)
     reyting_ball = models.IntegerField(default=0)
     reyting_pul = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     
@@ -123,18 +127,6 @@ class JarimaRecord(models.Model):
         verbose_name = "Jarima yozuvi"
         verbose_name_plural = "Jarima yozuvlari"
 
-
-
-
-
-
-
-
-from django.utils import timezone
-import datetime
-
-# ... (boshqa modellar)
-
 class Reyting(models.Model):
     DAVR_TANLOVLARI = [
         ('kunlik', 'Kunlik'),
@@ -151,7 +143,7 @@ class Reyting(models.Model):
     jarima_pul = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     reyting_ball = models.IntegerField(default=0)
     reyting_pul = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    sana = models.DateField(default=timezone.now)  # default ni o'zgartirdik
+    sana = models.DateField(default=timezone.now)
     
     def save(self, *args, **kwargs):
         if not self.sana:
