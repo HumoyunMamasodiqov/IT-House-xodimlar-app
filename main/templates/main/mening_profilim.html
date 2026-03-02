@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Mening Profilim{% endblock %}
+
+{% block content %}
+<div class="grid">
+    <!-- Asosiy ma'lumotlar -->
+    <div class="card">
+        <h2 class="card-title">👤 Mening Profilim</h2>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 40px; color: white;">{{ xodim.ism|first }}{{ xodim.familya|first }}</span>
+            </div>
+            <h3>{{ xodim.ism }} {{ xodim.familya }}</h3>
+            <p>📞 {{ xodim.telefon }}</p>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+            <div style="text-align: center; padding: 15px; background: #f0f9ff; border-radius: 15px;">
+                <div style="font-size: 14px; color: #666;">Reytingdagi o'rin</div>
+                <div style="font-size: 32px; font-weight: bold; color: #667eea;">#{{ joylashuv }}</div>
+                <div style="font-size: 12px;">{{ jami_xodimlar }} ta xodim</div>
+            </div>
+            <div style="text-align: center; padding: 15px; background: #f0f9ff; border-radius: 15px;">
+                <div style="font-size: 14px; color: #666;">Umumiy reyting</div>
+                <div style="font-size: 32px; font-weight: bold; color: #667eea;">{{ reyting_ball }}</div>
+                <div style="font-size: 12px;">ball</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistika -->
+    <div class="card">
+        <h3 class="card-title">📊 Mening Statistikam</h3>
+        
+        <div style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span>⭐ Bonus ball:</span>
+                <span class="badge-success">+{{ umumiy_bonus_ball }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span>💰 Bonus pul:</span>
+                <span>{{ umumiy_bonus_pul }} so'm</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span>⚠️ Jarima ball:</span>
+                <span class="badge-danger">-{{ umumiy_jarima_ball }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span>💸 Jarima pul:</span>
+                <span>{{ umumiy_jarima_pul }} so'm</span>
+            </div>
+            <div style="border-top: 1px solid #eee; margin: 15px 0; padding-top: 15px;">
+                <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                    <span>🏆 Sof reyting ball:</span>
+                    <span style="color: {% if reyting_ball > 0 %}green{% else %}red{% endif %};">
+                        {% if reyting_ball > 0 %}+{% endif %}{{ reyting_ball }}
+                    </span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>💰 Sof reyting pul:</span>
+                    <span>{{ reyting_pul }} so'm</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bonuslar tarixi -->
+<div class="card">
+    <h3 class="card-title">⭐ Mening Bonuslarim</h3>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sana</th>
+                    <th>Sabab</th>
+                    <th>Ball</th>
+                    <th>Pul</th>
+                    <th>Izoh</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bonus in bonuslar %}
+                <tr>
+                    <td>{{ bonus.sana|date:"d.m.Y H:i" }}</td>
+                    <td>{{ bonus.sabab.nom|default:"Sababsiz" }}</td>
+                    <td class="badge-success">+{{ bonus.ball_miqdori }}</td>
+                    <td>+{{ bonus.pul_miqdori }} so'm</td>
+                    <td>{{ bonus.izoh|truncatechars:30 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">Hali bonuslar mavjud emas</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Jarimalar tarixi -->
+<div class="card">
+    <h3 class="card-title">⚠️ Mening Jarimalarim</h3>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sana</th>
+                    <th>Sabab</th>
+                    <th>Ball</th>
+                    <th>Pul</th>
+                    <th>Izoh</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for jarima in jarimalar %}
+                <tr>
+                    <td>{{ jarima.sana|date:"d.m.Y H:i" }}</td>
+                    <td>{{ jarima.sabab.nom|default:"Sababsiz" }}</td>
+                    <td class="badge-danger">-{{ jarima.ball_miqdori }}</td>
+                    <td>-{{ jarima.pul_miqdori }} so'm</td>
+                    <td>{{ jarima.izoh|truncatechars:30 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">Hali jarimalar mavjud emas</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

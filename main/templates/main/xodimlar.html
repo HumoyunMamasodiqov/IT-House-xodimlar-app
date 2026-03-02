@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Xodimlar{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom: 20px;">👥 Xodimlar</h2>
+
+<!-- Search -->
+<form method="GET" class="search-box">
+    <input type="text" name="qidiruv" placeholder="Ism, familya yoki telefon bo'yicha qidirish..." value="{{ request.GET.qidiruv }}">
+    <button type="submit">Qidirish</button>
+</form>
+
+<!-- Xodimlar Table -->
+<div class="card">
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ism</th>
+                    <th>Familya</th>
+                    <th>Telefon</th>
+                    <th>Bonus (Ball)</th>
+                    <th>Jarima (Ball)</th>
+                    <th>Reyting</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for xodim in xodimlar %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ xodim.ism }}</td>
+                    <td>{{ xodim.familya }}</td>
+                    <td>{{ xodim.telefon }}</td>
+                    <td class="badge-success">{{ xodim.bonus_ball }}</td>
+                    <td class="badge-danger">{{ xodim.jarima_ball }}</td>
+                    <td>
+                        {% with reyting=xodim.umumiy_reyting_ball %}
+                            {% if reyting > 0 %}
+                                <span class="badge-success">+{{ reyting }}</span>
+                            {% else %}
+                                <span class="badge-danger">{{ reyting }}</span>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center;">Xodimlar mavjud emas</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if xodimlar.has_other_pages %}
+    <div class="pagination">
+        {% if xodimlar.has_previous %}
+        <a href="?page={{ xodimlar.previous_page_number }}{% if request.GET.qidiruv %}&qidiruv={{ request.GET.qidiruv }}{% endif %}" class="page-link">←</a>
+        {% endif %}
+        
+        {% for i in xodimlar.paginator.page_range %}
+            {% if xodimlar.number == i %}
+            <span class="page-link active">{{ i }}</span>
+            {% else %}
+            <a href="?page={{ i }}{% if request.GET.qidiruv %}&qidiruv={{ request.GET.qidiruv }}{% endif %}" class="page-link">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if xodimlar.has_next %}
+        <a href="?page={{ xodimlar.next_page_number }}{% if request.GET.qidiruv %}&qidiruv={{ request.GET.qidiruv }}{% endif %}" class="page-link">→</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

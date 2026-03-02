@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drum Podium</title>
+
+<style>
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    background:#f2f2f2;
+    font-family:Arial;
+    perspective:1200px;
+}
+
+.podium{
+    display:flex;
+    align-items:flex-end;
+    gap:40px;
+}
+
+.block{
+    width:130px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    font-size:40px;
+    font-weight:bold;
+    border-radius:12px;
+}
+
+/* 1 o‘rin */
+.first{
+    height:220px;
+    background:linear-gradient(to top,#2daae1,#4fc3f7);
+}
+
+/* Drum container */
+.drum-container{
+    height:170px;
+    width:130px;
+    position:relative;
+    transform-style:preserve-3d;
+    transition:transform 0.8s ease-in-out;
+}
+
+.face{
+    position:absolute;
+    width:130px;
+    height:170px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:40px;
+    font-weight:bold;
+    color:white;
+    border-radius:12px;
+    backface-visibility:hidden;
+}
+
+.second-face{
+    background:linear-gradient(to top,#1f7fbf,#3498db);
+}
+
+.third-face{
+    background:linear-gradient(to top,#165a99,#2980b9);
+}
+
+button{
+    margin-top:40px;
+    padding:10px 30px;
+    font-size:16px;
+    cursor:pointer;
+    border:none;
+    border-radius:6px;
+    background:#2daae1;
+    color:white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="podium">
+
+    <!-- Left Drum -->
+    <div class="drum-container" id="leftDrum">
+        <div class="face second-face" id="leftFront">2</div>
+        <div class="face second-face" id="leftBack" style="transform:rotateX(180deg)">4</div>
+    </div>
+
+    <!-- Center -->
+    <div class="block first">1</div>
+
+    <!-- Right Drum -->
+    <div class="drum-container" id="rightDrum">
+        <div class="face third-face" id="rightFront">3</div>
+        <div class="face third-face" id="rightBack" style="transform:rotateX(180deg)">5</div>
+    </div>
+
+</div>
+
+<button onclick="spin()">Aylantir</button>
+
+<script>
+let leftNumber = 2;
+let rightNumber = 3;
+let rotateX = 0;
+
+function spin(){
+
+    const leftDrum = document.getElementById("leftDrum");
+    const rightDrum = document.getElementById("rightDrum");
+
+    rotateX += 180;
+
+    leftDrum.style.transform = `rotateX(${rotateX}deg)`;
+    rightDrum.style.transform = `rotateX(${rotateX}deg)`;
+
+    setTimeout(()=>{
+        leftNumber += 2;
+        rightNumber += 2;
+
+        document.getElementById("leftFront").textContent = leftNumber;
+        document.getElementById("leftBack").textContent = leftNumber + 2;
+
+        document.getElementById("rightFront").textContent = rightNumber;
+        document.getElementById("rightBack").textContent = rightNumber + 2;
+
+    },800);
+}
+</script>
+
+</body>
+</html>
+    

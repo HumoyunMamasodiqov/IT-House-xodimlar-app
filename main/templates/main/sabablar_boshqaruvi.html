@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Sabablar Boshqaruvi{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom: 20px;">⚙️ Sabablar Boshqaruvi</h2>
+
+<div class="grid">
+    <!-- Bonus Sabablari -->
+    <div class="card">
+        <h3 class="card-title">➕ Bonus Sabablari</h3>
+        
+        <form method="POST" style="margin-bottom: 20px;">
+            {% csrf_token %}
+            <input type="hidden" name="bonus_qoshish" value="1">
+            
+            <div class="form-group">
+                <label>Sabab nomi</label>
+                <input type="text" name="bonus_nom" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Pul miqdori (so'm)</label>
+                <input type="number" name="bonus_pul" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Ball miqdori</label>
+                <input type="number" name="bonus_ball" class="form-control" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Bonus Sababini Qo'shish</button>
+        </form>
+        
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sabab</th>
+                        <th>Pul</th>
+                        <th>Ball</th>
+                        <th>O'chirish</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sabab in bonus_sabablar %}
+                    <tr>
+                        <td>{{ sabab.nom }}</td>
+                        <td>{{ sabab.pul_miqdori }}</td>
+                        <td>{{ sabab.ball_miqdori }}</td>
+                        <td>
+                            <form method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="tur" value="bonus">
+                                <input type="hidden" name="pk" value="{{ sabab.id }}">
+                                <input type="hidden" name="ochirish" value="1">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Rostdan ham o\'chirmoqchimisiz?')">O'chirish</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Bonus sabablari mavjud emas</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Jarima Sabablari -->
+    <div class="card">
+        <h3 class="card-title">➖ Jarima Sabablari</h3>
+        
+        <form method="POST" style="margin-bottom: 20px;">
+            {% csrf_token %}
+            <input type="hidden" name="jarima_qoshish" value="1">
+            
+            <div class="form-group">
+                <label>Sabab nomi</label>
+                <input type="text" name="jarima_nom" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Pul miqdori (so'm)</label>
+                <input type="number" name="jarima_pul" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Ball miqdori</label>
+                <input type="number" name="jarima_ball" class="form-control" required>
+            </div>
+            
+            <button type="submit" class="btn btn-warning" style="width: 100%;">Jarima Sababini Qo'shish</button>
+        </form>
+        
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sabab</th>
+                        <th>Pul</th>
+                        <th>Ball</th>
+                        <th>O'chirish</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sabab in jarima_sabablar %}
+                    <tr>
+                        <td>{{ sabab.nom }}</td>
+                        <td>{{ sabab.pul_miqdori }}</td>
+                        <td>{{ sabab.ball_miqdori }}</td>
+                        <td>
+                            <form method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="tur" value="jarima">
+                                <input type="hidden" name="pk" value="{{ sabab.id }}">
+                                <input type="hidden" name="ochirish" value="1">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Rostdan ham o\'chirmoqchimisiz?')">O'chirish</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Jarima sabablari mavjud emas</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

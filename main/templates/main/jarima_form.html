@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="grid">
+    <div class="card">
+        <h2 class="card-title">➖ {{ title }}</h2>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Xodim</label>
+                <select name="xodim" class="form-control" required>
+                    <option value="">Xodimni tanlang</option>
+                    {% for xodim in form.fields.xodim.queryset %}
+                    <option value="{{ xodim.id }}">{{ xodim.ism }} {{ xodim.familya }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Sabab</label>
+                <select name="sabab" class="form-control" required>
+                    <option value="">Sababni tanlang</option>
+                    {% for sabab in sabablar %}
+                    <option value="{{ sabab.id }}" data-pul="{{ sabab.pul_miqdori }}" data-ball="{{ sabab.ball_miqdori }}">
+                        {{ sabab.nom }} - {{ sabab.pul_miqdori }} so'm / {{ sabab.ball_miqdori }} ball
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Izoh</label>
+                <textarea name="izoh" class="form-control" rows="3"></textarea>
+            </div>
+            
+            <div id="preview" style="background: #f0f0f0; padding: 15px; border-radius: 10px; margin-bottom: 15px; display: none;">
+                <strong>Tanlangan:</strong><br>
+                <span id="preview-pul"></span> so'm<br>
+                <span id="preview-ball"></span> ball
+            </div>
+            
+            <button type="submit" class="btn btn-warning" style="width: 100%;">Jarima Qo'shish</button>
+        </form>
+    </div>
+    
+    <div class="card">
+        <h3 class="card-title">Mavjud Jarima Sabablari</h3>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sabab</th>
+                        <th>Pul (so'm)</th>
+                        <th>Ball</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sabab in sabablar %}
+                    <tr>
+                        <td>{{ sabab.nom }}</td>
+                        <td>{{ sabab.pul_miqdori }}</td>
+                        <td>{{ sabab.ball_miqdori }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelector('select[name="sabab"]').addEventListener('change', function() {
+    const selected = this.options[this.selectedIndex];
+    if (selected.value) {
+        const pul = selected.dataset.pul;
+        const ball = selected.dataset.ball;
+        document.getElementById('preview').style.display = 'block';
+        document.getElementById('preview-pul').textContent = pul;
+        document.getElementById('preview-ball').textContent = ball;
+    } else {
+        document.getElementById('preview').style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

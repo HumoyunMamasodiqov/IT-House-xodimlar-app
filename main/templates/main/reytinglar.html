@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Reytinglar{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom: 20px;">🏆 Reytinglar</h2>
+
+<!-- Davr tanlash -->
+<div style="margin-bottom: 20px;">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="?davr=umumiy" class="btn {% if davr == 'umumiy' %}btn-primary{% else %}btn{% endif %}">🏆 Umumiy</a>
+        <a href="?davr=kunlik" class="btn {% if davr == 'kunlik' %}btn-primary{% else %}btn{% endif %}">📅 Kunlik</a>
+        <a href="?davr=haftalik" class="btn {% if davr == 'haftalik' %}btn-primary{% else %}btn{% endif %}">📊 Haftalik</a>
+        <a href="?davr=oylik" class="btn {% if davr == 'oylik' %}btn-primary{% else %}btn{% endif %}">📈 Oylik</a>
+        <a href="?davr=yillik" class="btn {% if davr == 'yillik' %}btn-primary{% else %}btn{% endif %}">📉 Yillik</a>
+    </div>
+</div>
+
+<div class="card">
+    <h3 class="card-title">
+        {% if davr == 'kunlik' %}📅 Kunlik Reyting
+        {% elif davr == 'haftalik' %}📊 Haftalik Reyting
+        {% elif davr == 'oylik' %}📈 Oylik Reyting
+        {% elif davr == 'yillik' %}📉 Yillik Reyting
+        {% else %}🏆 Umumiy Reyting{% endif %}
+    </h3>
+    
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Xodim</th>
+                    <th>Bonus (Ball)</th>
+                    <th>Bonus (So'm)</th>
+                    <th>Jarima (Ball)</th>
+                    <th>Jarima (So'm)</th>
+                    <th>Reyting Ball</th>
+                    {% if davr == 'umumiy' %}
+                    <th>Reyting So'm</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        <a href="{% url 'xodim_detail' item.xodim.id %}" style="text-decoration: none; color: #333;">
+                            {{ item.xodim.ism }} {{ item.xodim.familya }}
+                        </a>
+                    </td>
+                    <td class="badge-success">+{{ item.bonus_ball }}</td>
+                    <td>{{ item.bonus_pul }}</td>
+                    <td class="badge-danger">-{{ item.jarima_ball }}</td>
+                    <td>{{ item.jarima_pul }}</td>
+                    <td>
+                        {% with reyting=item.bonus_ball|add:"-"|add:item.jarima_ball %}
+                            {% if reyting > 0 %}
+                                <span class="badge-success">+{{ reyting }}</span>
+                            {% else %}
+                                <span class="badge-danger">{{ reyting }}</span>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                    {% if davr == 'umumiy' %}
+                    <td>{{ item.reyting_pul }} so'm</td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="{% if davr == 'umumiy' %}8{% else %}7{% endif %}" style="text-align: center;">
+                        Ma'lumotlar mavjud emas
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

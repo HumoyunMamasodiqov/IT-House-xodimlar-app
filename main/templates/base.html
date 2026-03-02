@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>IT House - {% block title %}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+        .pacifico-font {
+            font-family: 'Pacifico', cursive;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Top Navigation -->
+    <nav class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3">
+        <div class="flex items-center justify-between">
+            <h1 class="text-xl pacifico-font text-primary">IT House</h1>
+            <div class="flex items-center space-x-3">
+                {% if user.is_authenticated %}
+                <span class="text-sm font-medium text-gray-700">{{ user.get_full_name|default:user.username }}</span>
+                <a href="{% url 'mening_profilim' %}" class="w-8 h-8 flex items-center justify-center bg-primary rounded-full cursor-pointer">
+                    <i class="ri-user-line text-white text-sm"></i>
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="text-sm font-medium text-primary">Kirish</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-20 pb-24 px-4">
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="p-3 rounded-lg {% if message.tags == 'success' %}bg-green-50 text-green-700{% else %}bg-red-50 text-red-700{% endif %} text-sm mb-2">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 z-50">
+        <div class="grid grid-cols-4 h-16">
+            <a href="{% url 'dashboard' %}" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'dashboard' %}bg-primary text-white{% else %}text-gray-600 hover:text-primary{% endif %}">
+                <div class="w-6 h-6 flex items-center justify-center">
+                    <i class="ri-home-4-line text-lg"></i>
+                </div>
+                <span class="text-xs font-medium">Bosh sahifa</span>
+            </a>
+            <a href="{% url 'reytinglar' %}" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'reytinglar' %}bg-primary text-white{% else %}text-gray-600 hover:text-primary{% endif %}">
+                <div class="w-6 h-6 flex items-center justify-center">
+                    <i class="ri-bar-chart-line text-lg"></i>
+                </div>
+                <span class="text-xs">Reyting</span>
+            </a>
+            <a href="{% url 'sabablar_boshqaruvi' %}" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'sabablar_boshqaruvi' %}bg-primary text-white{% else %}text-gray-600 hover:text-primary{% endif %}">
+                <div class="w-6 h-6 flex items-center justify-center">
+                    <i class="ri-question-line text-lg"></i>
+                </div>
+                <span class="text-xs">Sabablar</span>
+            </a>
+            <a href="{% url 'mening_profilim' %}" class="flex flex-col items-center justify-center space-y-1 {% if request.resolver_match.url_name == 'mening_profilim' %}bg-primary text-white{% else %}text-gray-600 hover:text-primary{% endif %}">
+                <div class="w-6 h-6 flex items-center justify-center">
+                    <i class="ri-user-line text-lg"></i>
+                </div>
+                <span class="text-xs">Profil</span>
+            </a>
+        </div>
+    </nav>
+</body>
+</html>

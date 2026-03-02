@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ xodim.ism }} {{ xodim.familya }}{% endblock %}
+
+{% block content %}
+<!-- Xodim header -->
+<div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 mb-6 text-white shadow-md">
+    <div class="flex items-center gap-4 mb-4">
+        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl font-bold backdrop-blur-sm">
+            {{ xodim.ism|first }}{{ xodim.familya|first }}
+        </div>
+        <div>
+            <h2 class="text-2xl font-bold">{{ xodim.ism }} {{ xodim.familya }}</h2>
+            <p class="text-blue-100 text-sm flex items-center gap-1">
+                <i class="ri-phone-line"></i> {{ xodim.telefon }}
+            </p>
+        </div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white/10 rounded-lg p-3">
+            <div class="text-xs text-blue-100 mb-1">Bonus ball</div>
+            <div class="text-xl font-bold">+{{ xodim.bonus_ball }}</div>
+            <div class="text-xs text-blue-100">{{ xodim.bonus_pul }} so'm</div>
+        </div>
+        <div class="bg-white/10 rounded-lg p-3">
+            <div class="text-xs text-blue-100 mb-1">Jarima ball</div>
+            <div class="text-xl font-bold">-{{ xodim.jarima_ball }}</div>
+            <div class="text-xs text-blue-100">{{ xodim.jarima_pul }} so'm</div>
+        </div>
+    </div>
+    
+    <!-- Reyting -->
+    <div class="mt-4 bg-white rounded-lg p-4 text-gray-900">
+        <div class="flex justify-between items-center">
+            <span class="text-sm">🏆 Umumiy reyting</span>
+            <span class="text-2xl font-bold {% if xodim.reyting_ball > 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                {% if xodim.reyting_ball > 0 %}+{% endif %}{{ xodim.reyting_ball }}
+            </span>
+        </div>
+        <div class="flex justify-between items-center mt-2 text-sm">
+            <span>💰 Pul ko'rinishida</span>
+            <span class="font-semibold">{{ xodim.reyting_pul }} so'm</span>
+        </div>
+    </div>
+</div>
+
+<!-- Bonuslar tarixi -->
+<div class="bg-white rounded-lg shadow-sm mb-6">
+    <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+        <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+            <i class="ri-star-fill text-yellow-500"></i>
+            Bonuslar tarixi
+        </h3>
+        <span class="text-xs bg-green-50 text-green-600 px-2 py-1 rounded-full">
+            Jami: {{ xodim.bonus_ball }} ball
+        </span>
+    </div>
+    
+    <div class="divide-y divide-gray-100">
+        {% for bonus in bonuslar %}
+        <div class="p-4 hover:bg-green-50 transition-colors">
+            <div class="flex items-center justify-between mb-2">
+                <div class="text-sm text-gray-500">{{ bonus.sana|date:"d.m.Y H:i" }}</div>
+                <div class="text-green-600 font-semibold">+{{ bonus.ball_miqdori }} ball</div>
+            </div>
+            <div class="flex items-center justify-between">
+                <div class="text-sm font-medium">{{ bonus.sabab.nom|default:"Sababsiz" }}</div>
+                <div class="text-sm text-gray-600">{{ bonus.pul_miqdori }} so'm</div>
+            </div>
+            {% if bonus.izoh %}
+            <div class="mt-2 text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                {{ bonus.izoh }}
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="p-8 text-center text-gray-500">
+            <i class="ri-star-line text-4xl mb-2"></i>
+            <p>Hali bonuslar mavjud emas</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Jarimalar tarixi -->
+<div class="bg-white rounded-lg shadow-sm">
+    <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+        <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+            <i class="ri-close-circle-fill text-red-500"></i>
+            Jarimalar tarixi
+        </h3>
+        <span class="text-xs bg-red-50 text-red-600 px-2 py-1 rounded-full">
+            Jami: {{ xodim.jarima_ball }} ball
+        </span>
+    </div>
+    
+    <div class="divide-y divide-gray-100">
+        {% for jarima in jarimalar %}
+        <div class="p-4 hover:bg-red-50 transition-colors">
+            <div class="flex items-center justify-between mb-2">
+                <div class="text-sm text-gray-500">{{ jarima.sana|date:"d.m.Y H:i" }}</div>
+                <div class="text-red-600 font-semibold">-{{ jarima.ball_miqdori }} ball</div>
+            </div>
+            <div class="flex items-center justify-between">
+                <div class="text-sm font-medium">{{ jarima.sabab.nom|default:"Sababsiz" }}</div>
+                <div class="text-sm text-gray-600">{{ jarima.pul_miqdori }} so'm</div>
+            </div>
+            {% if jarima.izoh %}
+            <div class="mt-2 text-xs text-gray-500 bg-red-50 p-2 rounded">
+                {{ jarima.izoh }}
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="p-8 text-center text-gray-500">
+            <i class="ri-close-circle-line text-4xl mb-2"></i>
+            <p>Hali jarimalar mavjud emas</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
